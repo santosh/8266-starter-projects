@@ -13,10 +13,14 @@ String header;
 // Auxiliar variables to store the current output state
 String output5State = "off";
 String output4State = "off";
+String output0State = "off";
+String output2State = "off";
 
 // Assign output variables to GPIO pins
 const int output5 = 5;
 const int output4 = 4;
+const int output0 = 0;
+const int output2 = 2;
 
 // Current time
 unsigned long currentTime = millis();
@@ -30,9 +34,13 @@ void setup() {
   // Initialize the output variables as outputs
   pinMode(output5, OUTPUT);
   pinMode(output4, OUTPUT);
+  pinMode(output0, OUTPUT);
+  pinMode(output2, OUTPUT);
   // Set outputs to LOW
   digitalWrite(output5, LOW);
   digitalWrite(output4, LOW);
+  digitalWrite(output0, LOW);
+  digitalWrite(output2, LOW);
 
   // Connect to Wi-Fi network with SSID and password
   Serial.print("Connecting to ");
@@ -92,12 +100,29 @@ void loop(){
               Serial.println("GPIO 4 off");
               output4State = "off";
               digitalWrite(output4, LOW);
+            } else if (header.indexOf("GET /0/on") >= 0) {
+              Serial.println("GPIO 0 on");
+              output0State = "on";
+              digitalWrite(output0, HIGH);
+            } else if (header.indexOf("GET /0/off") >= 0) {
+              Serial.println("GPIO 0 off");
+              output0State = "off";
+              digitalWrite(output0, LOW);
+            } else if (header.indexOf("GET /2/on") >= 0) {
+              Serial.println("GPIO 2 on");
+              output2State = "on";
+              digitalWrite(output2, HIGH);
+            } else if (header.indexOf("GET /2/off") >= 0) {
+              Serial.println("GPIO 2 off");
+              output2State = "off";
+              digitalWrite(output2, LOW);
             }
             
             // Display the HTML web page
             client.println("<!DOCTYPE html><html>");
             client.println("<head><meta name=\"viewport\" content=\"width=device-width, initial-scale=1\">");
             client.println("<link rel=\"icon\" href=\"data:,\">");
+            client.println("<title>ESP8266 LED Control</title>");
             // CSS to style the on/off buttons 
             // Feel free to change the background-color and font-size attributes to fit your preferences
             client.println("<style>html { font-family: Helvetica; display: inline-block; margin: 0px auto; text-align: center;}");
@@ -107,7 +132,7 @@ void loop(){
             
             // Web Page Heading
             client.println("<body><h1>ESP8266 Web Server</h1>");
-            
+
             // Display current state, and ON/OFF buttons for GPIO 5  
             client.println("<p>GPIO 5 - State " + output5State + "</p>");
             // If the output5State is off, it displays the ON button       
@@ -125,6 +150,26 @@ void loop(){
             } else {
               client.println("<p><a href=\"/4/off\"><button class=\"button button2\">OFF</button></a></p>");
             }
+
+            // Display current state, and ON/OFF buttons for GPIO 0
+            client.println("<p>GPIO 0 - State " + output0State + "</p>");
+            // If the output0State is off, it displays the ON button
+            if (output0State=="off") {
+              client.println("<p><a href=\"/0/on\"><button class=\"button\">ON</button></a></p>");
+            } else {
+              client.println("<p><a href=\"/0/off\"><button class=\"button button2\">OFF</button></a></p>");
+            }
+
+            // Display current state, and ON/OFF buttons for GPIO 0
+            client.println("<p>GPIO 2 - State " + output2State + "</p>");
+            // If the output2State is off, it displays the ON button
+            if (output2State=="off") {
+              client.println("<p><a href=\"/2/on\"><button class=\"button\">ON</button></a></p>");
+            } else {
+              client.println("<p><a href=\"/2/off\"><button class=\"button button2\">OFF</button></a></p>");
+            }
+
+
             client.println("</body></html>");
             
             // The HTTP response ends with another blank line
